@@ -110,7 +110,14 @@ class PhotoListPage extends StatelessWidget {
   void initFuture() {
     final baseUrl = "https://api.unsplash.com";
     final clientId = "cf49c08b444ff4cb9e4d126b7e9f7513ba1ee58de7906e4360afc1a33d1bf4c0";
-    _futurePhotosList = http.get("$baseUrl/photos?client_id=$clientId").then((response) async {
+    _futurePhotosList = http.get("$baseUrl/photos?client_id=$clientId").catchError((e) {
+      print(e.message);
+      _scaffoldKey.currentState.showSnackBar(SnackBar(
+        duration: Duration(seconds: 1),
+        backgroundColor: Colors.red,
+        content: Text("Ошибка получения фото"),
+      ));
+    }).then((response) async {
       List<PhotoData> resultList = [];
       if (response.statusCode == 200) {
         print(response.body);
@@ -124,12 +131,6 @@ class PhotoListPage extends StatelessWidget {
         print(response.statusCode);
       }
       return resultList;
-    }).catchError((e) {
-      _scaffoldKey.currentState.showSnackBar(SnackBar(
-        duration: Duration(seconds: 1),
-        backgroundColor: Colors.red,
-        content: Text("Ошибка получения фото"),
-      ));
     });
     ;
   }
